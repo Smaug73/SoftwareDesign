@@ -9,6 +9,7 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import Contabilita.Pagamento;
 import Contabilita.Ricevuta;
 import Negozio.Prodotto;
 import Persistenza.GestoreDB;
@@ -44,17 +45,27 @@ public class GestoreDB {
 	 * Metodo che ritorna lista prodotti del database
 	 */
 	public List<Prodotto> getAllProdotti() {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-		
-		 @SuppressWarnings("unchecked")
-		 List<Prodotto> prodotti = (List<Prodotto>) session.createQuery("FROM Prodotto p ORDER BY p.nome").list();
-		 System.out.println("PRODOTTI CARICARI DAL DATABASE");
-		 
-		 
-		session.getTransaction().commit();
-		session.close();
-		return prodotti;	
+
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			
+			 @SuppressWarnings("unchecked")
+			 List<Prodotto> prodotti = (List<Prodotto>) session.createQuery("FROM Prodotto p ORDER BY p.nome").list();
+			 System.out.println("PRODOTTI CARICARI DAL DATABASE");
+			 
+			 
+			session.getTransaction().commit();
+			session.close();
+			return prodotti;
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo getAllProdotti GestoreDB");
+			System.out.println(exception.getStackTrace());
+			return null;
+		}
+			
 	}
 	
 	
@@ -72,26 +83,34 @@ public class GestoreDB {
 	 * METODO PER L'AGGIORNAMENTO DEI PRODOTTI NEL DATABASE
 	 */
 	public void updateProdotti(List<Prodotto> prodotti) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		Transaction trans=session.beginTransaction();
-		
-		for(Prodotto p: prodotti) {
-			System.out.println("OK");
-			//CARICHIAMO IL PRODOTTO CORRISPONDENTE DAL DATABASE
-			Prodotto pDB= (Prodotto) session.get(Prodotto.class,p.getId());
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			Transaction trans=session.beginTransaction();
 			
-			//AGGIORNIAMO OGNI CAMPO DEL PRODOTTO NEL CASO C'è STATO UN CAMBIAMENTO
-			if(pDB.getGiacenza()!= p.getGiacenza()) {
-				System.out.println("OK-if");
-				//SOLO LA GIACENZA PUò ESSERE MODIFICATA
-				pDB.setGiacenza(p.getGiacenza());
+			for(Prodotto p: prodotti) {
+				System.out.println("OK");
+				//CARICHIAMO IL PRODOTTO CORRISPONDENTE DAL DATABASE
+				Prodotto pDB= (Prodotto) session.get(Prodotto.class,p.getId());
+				
+				//AGGIORNIAMO OGNI CAMPO DEL PRODOTTO NEL CASO C'è STATO UN CAMBIAMENTO
+				if(pDB.getGiacenza()!= p.getGiacenza()) {
+					System.out.println("OK-if");
+					//SOLO LA GIACENZA PUò ESSERE MODIFICATA
+					pDB.setGiacenza(p.getGiacenza());
+				}
+				
+				System.out.println("PRODOTTI AGGIORNATI NEL DATABASE");
+				 
 			}
-			
-			System.out.println("PRODOTTI AGGIORNATI NEL DATABASE");
-			 
+			trans.commit();
+			session.close();
 		}
-		trans.commit();
-		session.close();
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo updateProdotti GestoreDB");
+			System.out.println(exception.getStackTrace());
+		}
+		
 	}
 	
 	
@@ -99,16 +118,24 @@ public class GestoreDB {
 	 * Metodo per il popolamento della tabella dei prodotti
 	 */
 	public void saveProdotto(Prodotto p) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-		
-		session.save(p);
-		
-		session.getTransaction().commit();
-		session.close();
-		
-		System.out.println("PRODOTTO SALVATO");
-		
+
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			
+			session.save(p);
+			
+			session.getTransaction().commit();
+			session.close();
+			
+			System.out.println("PRODOTTO SALVATO");
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo saveProdotto GestoreDB");
+			System.out.println(exception.getStackTrace());
+		}
+
 	}
 	
 	
@@ -117,33 +144,126 @@ public class GestoreDB {
 	 */
 	//Prendiamo tutte le ricevute
 	public List<Ricevuta> getAllRicevute() {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
+
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			
+			 @SuppressWarnings("unchecked")
+			 List<Ricevuta> prodotti = (List<Ricevuta>) session.createQuery("FROM Ricevuta").list();
+			 System.out.println("PRODOTTI CARICARI DAL DATABASE");
+			 
+			 
+			session.getTransaction().commit();
+			session.close();
+			return prodotti;	
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo getAllRicevute GestoreDB");
+			System.out.println(exception.getStackTrace());
+			return null;
+		}
 		
-		 @SuppressWarnings("unchecked")
-		 List<Ricevuta> prodotti = (List<Ricevuta>) session.createQuery("FROM Ricevuta").list();
-		 System.out.println("PRODOTTI CARICARI DAL DATABASE");
-		 
-		 
-		session.getTransaction().commit();
-		session.close();
-		return prodotti;	
 	}
 	
 	//Ricevuta dal pagamentoId
 	public List<Ricevuta> getAllRicevuteByPagamentoId(String pagamentoId) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-		
-		 @SuppressWarnings("unchecked")
-		 List<Ricevuta> prodotti = (List<Ricevuta>) session.createQuery("FROM Ricevuta r WHERE r.pagamentoID="+pagamentoId).list();
-		 System.out.println("PRODOTTI CARICARI DAL DATABASE");
-		 
-		 
-		session.getTransaction().commit();
-		session.close();
-		return prodotti;	
+
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			
+			 @SuppressWarnings("unchecked")
+			 List<Ricevuta> prodotti = (List<Ricevuta>) session.createQuery("FROM Ricevuta r WHERE r.pagamentoID="+pagamentoId).list();
+			 System.out.println("PRODOTTI CARICARI DAL DATABASE");
+			 
+			 
+			session.getTransaction().commit();
+			session.close();
+			return prodotti;	
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo getAllRicevuteByPagamentoId GestoreDB");
+			System.out.println(exception.getStackTrace());
+			return null;
+		}
+	
 	}
+
+
+
+
+
+	/*
+	 *	GESTIONE PERSISTENZA PAGAMENTO
+	 */
+	public List<Pagamento> getPagamentiById(String Pagamentoid){
+
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+
+			@SuppressWarnings("unchecked")
+			List<Pagamento> pagamenti = (List<Pagamento>) session.createQuery("FROM PAGAMENTO p WHERE p.id="+Pagamentoid).list();
+			System.out.println("PRODOTTI CARICARI DAL DATABASE");
+			
+			session.getTransaction().commit();
+			session.close();
+
+			return pagamenti;
+
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo getPagamentoById GestoreDB");
+			System.out.println(exception.getStackTrace());
+			return null;
+		}
+
+
+	}
+
+	public List<Pagamento> getPagamentiByRicevutaId(String ricevutaId){
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+
+			@SuppressWarnings("unchecked")
+			List<Pagamento> pagamenti = (List<Pagamento>) session.createQuery("FROM PAGAMENTO p WHERE p.ricevutaId="+ricevutaId).list();
+			System.out.println("PRODOTTI CARICARI DAL DATABASE");
+			
+			session.getTransaction().commit();
+			session.close();
+
+			return pagamenti;
+
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo getPagamentoByRicevutaId GestoreDB");
+			System.out.println(exception.getStackTrace());
+			return null;
+		}
+	}
+
+
+
+
+
+/*
+try{
+
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo updateProdotti GestoreDB");
+			System.out.println(exception.getStackTrace());
+		}
+*/
+
+
 	
 
 }

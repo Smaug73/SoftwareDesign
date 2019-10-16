@@ -17,5 +17,7 @@
  		<mapping class="Negozio.Prodotto"/>
  		<mapping class="Contabilita.Ricevuta"/>
  		<mapping class="Negozio.CartaFedelta">
+		<mapping class="Contabilita.Pagamento">
+		<mapping class="Acquisto.Recensione">
  	</session-factory>
 </hibernate-configuration>
