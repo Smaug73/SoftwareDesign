@@ -40,7 +40,7 @@ public class GestoreDB {
 	 
 	
 	/*
-	 * METODI PER LA GESTIONE DEI PRODOTTI
+	 * METODI PER LA GESTIONE DEI PRODOTTI*********************************************************
 	 * 
 	 * Metodo che ritorna lista prodotti del database
 	 */
@@ -140,7 +140,7 @@ public class GestoreDB {
 	
 	
 	/*
-	 * METODI PERSISTENZA RICEVUTA
+	 * METODI PERSISTENZA RICEVUTA**********************************************************
 	 */
 	//Prendiamo tutte le ricevute
 	public List<Ricevuta> getAllRicevute() {
@@ -192,12 +192,30 @@ public class GestoreDB {
 	
 	}
 
+	public void saveRicevuta(Ricevuta r){
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+
+			session.save(r);
+
+			session.getTransaction().commit();
+			session.close();
+
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo updateProdotti GestoreDB");
+			System.out.println(exception.getStackTrace());
+		}
+	}
+
 
 
 
 
 	/*
-	 *	GESTIONE PERSISTENZA PAGAMENTO
+	 *	GESTIONE PERSISTENZA PAGAMENTO  ***********************************************
 	 */
 	public List<Pagamento> getPagamentiById(String Pagamentoid){
 
@@ -247,6 +265,30 @@ public class GestoreDB {
 			return null;
 		}
 	}
+
+
+	public void savePagamento(Pagamento p){
+		try{
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			
+			session.save(p);
+
+			session.getTransaction().commit();
+			session.close();
+		}
+		catch(Exception exception){
+			System.out.println("Eccezione "+exception.getMessage());
+			System.out.println("Nel metodo savePagamento GestoreDB");
+			System.out.println(exception.getStackTrace());
+		}
+
+	}
+
+
+//PERSISTENZA 
+
+
 
 
 
